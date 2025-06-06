@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat IA</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        .user { color: blue; }
+        .bot { color: green; }
+    </style>
+</head>
+<body>
+    <div id="chat"></div>
+    <input type="text" id="message" placeholder="Digite sua mensagem" style="width:80%"> 
+    <button id="send">Enviar</button>
+
+<script>
+$(function() {
+    $('#send').on('click', function() {
+        const msg = $('#message').val();
+        if(!msg) return;
+        $('#chat').append('<div class="user"><strong>Você:</strong> ' + msg + '</div>');
+        $('#message').val('');
+        $.ajax({
+            url: '/chat',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({message: msg}),
+            success: function(data) {
+                $('#chat').append('<div class="bot"><strong>Bot:</strong> ' + data.reply + '</div>');
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            },
+            error: function(err) {
+                $('#chat').append('<div class="bot"><strong>Erro:</strong> ' + err.responseJSON.error + '</div>');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
